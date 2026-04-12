@@ -1,0 +1,27 @@
+# Secrets & credentials — never commit these
+.env
+credentials.json
+token.json
+
+# Generated output
+briefing.html
+briefing.log
+briefing_error.log
+
+# Netlify site config (contains your site ID — regenerates on first run)
+netlify_site.json
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.Python
+env/
+venv/
+.venv/
+*.egg-info/
+dist/
+build/
+
+# macOS
+.DS_Store
