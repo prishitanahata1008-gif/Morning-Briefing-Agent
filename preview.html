@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jarvis</title>
+<style>
+    :root {
+        --bg-cream: #f8efec;
+        --bg-tint: #f2e4df;
+        --tile-bg: #fffdfc;
+        --ink-main: #26171b;
+        --ink-soft: #5f5054;
+        --ink-muted: #907f84;
+        --line-soft: #e6d4cf;
+        --accent: #8c1d1e;
+        --accent-deep: #5f0f12;
+    }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+                background: linear-gradient(180deg, var(--bg-cream), var(--bg-tint));
+        color: var(--ink-main);
+    min-height: 100vh;
+    padding: 32px 20px 64px;
+  }
+  .wrap { max-width: 960px; margin: 0 auto; }
+
+  /* ── Header ── */
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding-bottom: 20px;
+    margin-bottom: 16px;
+        border-bottom: 1px solid var(--line-soft);
+  }
+  .jarvis-tag {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-bottom: 10px;
+  }
+  .jarvis-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+        background: var(--accent);
+    flex-shrink: 0;
+    animation: blink 2s infinite;
+  }
+  @keyframes blink {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%       { opacity: 0.35; transform: scale(0.75); }
+  }
+  .header-greeting {
+    font-family: Georgia, serif;
+    font-size: 30px;
+    font-weight: normal;
+        color: var(--ink-main);
+    line-height: 1.15;
+    margin-bottom: 5px;
+  }
+  .header-sub {
+    font-size: 12px;
+        color: var(--accent);
+        font-style: italic;
+    line-height: 1.5;
+  }
+  .header-date {
+    font-size: 11px;
+        color: var(--ink-muted);
+    text-align: right;
+    line-height: 1.8;
+  }
+
+  /* ── Bento grid ── */
+  .bento {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 10px;
+  }
+  @media (max-width: 640px) {
+    .bento { grid-template-columns: 1fr; }
+    [class*="span-"] { grid-column: 1 / -1 !important; }
+  }
+  .span-4  { grid-column: span 4; }
+  .span-6  { grid-column: span 6; }
+  .span-12 { grid-column: span 12; }
+
+  /* ── Tile base ── */
+  .tile {
+    border-radius: 10px;
+    padding: 18px 20px;
+                border: 0.5px solid #dcc6c0;
+                border-left: 3px solid var(--accent);
+                background: linear-gradient(180deg, #fffefe 0%, var(--tile-bg) 100%);
+                box-shadow: 0 6px 18px rgba(95, 15, 18, 0.06);
+  }
+
+    /* Legacy markup compatibility: older briefings use .hero/.grid/.card/.section-label */
+    .hero {
+        padding-bottom: 20px;
+        border-bottom: 1px solid var(--line-soft);
+        margin-bottom: 16px;
+    }
+    .hero-tag {
+        font-size: 9px;
+        font-weight: 600;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin-bottom: 10px;
+    }
+    .hero h1 {
+        font-family: Georgia, serif;
+        font-size: 30px;
+        line-height: 1.15;
+        color: var(--ink-main);
+        margin-bottom: 5px;
+    }
+    .hero-sub {
+        font-size: 12px;
+        color: var(--accent);
+        font-style: italic;
+        line-height: 1.5;
+    }
+    .hero-date {
+        font-size: 11px;
+        color: var(--ink-muted);
+        line-height: 1.8;
+    }
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+        gap: 10px;
+    }
+    .card {
+        border-radius: 10px;
+        padding: 18px 20px;
+        border: 0.5px solid #dcc6c0;
+        border-left: 3px solid var(--accent);
+        background: linear-gradient(180deg, #fffefe 0%, var(--tile-bg) 100%);
+        box-shadow: 0 6px 18px rgba(95, 15, 18, 0.06);
+    }
+    .weather, .currency { grid-column: span 6; }
+    .full { grid-column: 1 / -1; }
+    .section-label {
+        font-size: 9px;
+        font-weight: 500;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin-bottom: 12px;
+    }
+    .weather-main {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 8px;
+    }
+    .weather-icon { font-size: 22px; }
+    .temp {
+        font-family: Georgia, serif;
+        font-size: 40px;
+        color: var(--accent-deep);
+        line-height: 1;
+    }
+    .desc { font-size: 12px; color: var(--ink-muted); }
+    .weather-meta {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6px;
+    }
+    .meta-item span {
+        font-size: 9px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--ink-muted);
+        display: block;
+    }
+    .meta-item strong { font-size: 13px; color: var(--ink-main); }
+    .fx-grid { display: grid; gap: 8px; }
+    .fx-item {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        gap: 8px;
+        align-items: center;
+        border-bottom: 0.5px solid var(--line-soft);
+        padding-bottom: 8px;
+    }
+    .fx-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .fx-flag { font-size: 14px; }
+    .fx-label-group { display: flex; gap: 5px; flex-wrap: wrap; color: var(--ink-main); }
+    .fx-equals { color: var(--ink-muted); }
+    .news-source { font-size: 10px; color: var(--ink-muted); margin-top: 2px; }
+    .news-desc { font-size: 12px; color: var(--ink-soft); line-height: 1.6; margin-top: 5px; }
+    .read-more { color: var(--accent); text-decoration: none; font-size: 11px; display: inline-block; margin-top: 6px; }
+    .task-check { color: var(--ink-muted); margin-top: 2px; display: inline-block; }
+    .word-header { display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; margin-bottom: 6px; }
+    .word-pron { font-size: 11px; color: var(--ink-muted); }
+    .word-etymology { font-size: 11px; color: var(--ink-muted); font-style: italic; line-height: 1.5; margin-bottom: 6px; }
+    @media (max-width: 640px) {
+        .weather, .currency, .full { grid-column: 1 / -1; }
+    }
+
+  /* ── Section label ── */
+  .label {
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+        color: var(--accent);
+    margin-bottom: 12px;
+  }
+
+  /* ── Weather tile ── */
+  .temp-big {
+    font-family: Georgia, serif;
+    font-size: 56px;
+        color: var(--accent-deep);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .temp-desc {
+    font-size: 11px;
+        color: var(--ink-muted);
+    text-transform: capitalize;
+    margin-bottom: 14px;
+  }
+  .weather-sub {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+  .wsub-item { display: flex; flex-direction: column; gap: 2px; }
+  .wsub-label {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+        color: var(--ink-muted);
+  }
+    .wsub-val { font-size: 13px; color: var(--ink-main); }
+
+  /* ── FX + Gold tiles ── */
+  .fx-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: 8px 0;
+        border-bottom: 0.5px solid var(--line-soft);
+  }
+  .fx-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .fx-code     { font-size: 11px; color: var(--ink-main); font-weight: 600; min-width: 36px; }
+    .fx-label-sm { font-size: 10px; color: var(--ink-muted); flex: 1; padding-left: 8px; }
+    .fx-rate     { font-family: Georgia, serif; font-size: 16px; color: var(--accent); }
+
+  /* ── Headlines tile ── */
+  .news-item {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 8px 0;
+        border-bottom: 0.5px solid var(--line-soft);
+  }
+  .news-item:last-child { border-bottom: none; padding-bottom: 0; }
+  .news-num {
+    font-family: Georgia, serif;
+    font-size: 11px;
+    color: #d9b4b5;
+    min-width: 20px;
+    flex-shrink: 0;
+  }
+  .news-title {
+    font-size: 12px;
+        color: var(--ink-soft);
+    line-height: 1.5;
+    text-decoration: none;
+  }
+    .news-title:hover { color: var(--accent); }
+
+  /* ── Calendar tile ── */
+  .cal-day-label {
+    font-size: 9px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--accent);
+    margin: 14px 0 6px;
+    padding-bottom: 5px;
+    border-bottom: 0.5px solid var(--line-soft);
+    display: flex;
+    gap: 8px;
+  }
+  .cal-day-label:first-child { margin-top: 0; }
+    .cal-day-date { font-weight: 400; color: var(--ink-muted); text-transform: none; letter-spacing: 0; }
+    .cal-empty { font-size: 11px; color: var(--ink-muted); font-style: italic; padding: 4px 0 8px; }
+  .event-item {
+    display: flex;
+    gap: 14px;
+    padding: 7px 0;
+    border-bottom: 0.5px solid var(--line-soft);
+  }
+  .event-item:last-child { border-bottom: none; padding-bottom: 0; }
+  .event-time {
+    font-size: 11px;
+    color: var(--ink-muted);
+    font-family: 'SF Mono', 'Menlo', monospace;
+    min-width: 90px;
+    flex-shrink: 0;
+    padding-top: 1px;
+  }
+    .event-title { font-size: 13px; color: var(--ink-main); line-height: 1.4; }
+    .event-loc   { font-size: 11px; color: var(--ink-muted); display: block; margin-top: 2px; }
+  .deadline-badge {
+    font-size: 9px;
+    font-weight: 500;
+    background: #f8e9e6;
+    color: var(--accent);
+    border: 0.5px solid #e1c6bf;
+    padding: 1px 6px;
+    border-radius: 20px;
+    vertical-align: middle;
+    margin-left: 6px;
+    letter-spacing: 0.05em;
+  }
+
+  /* ── Tasks tile ── */
+  .task-item {
+    display: flex;
+    gap: 12px;
+    padding: 7px 0;
+    border-bottom: 0.5px solid var(--line-soft);
+    align-items: flex-start;
+  }
+  .task-item:last-child { border-bottom: none; padding-bottom: 0; }
+  .task-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #d8b8b1;
+    flex-shrink: 0;
+    margin-top: 5px;
+  }
+    .task-dot-overdue { background: var(--accent); box-shadow: 0 0 0 3px rgba(140, 29, 30, 0.12); }
+    .task-title { font-size: 13px; color: var(--ink-main); line-height: 1.4; }
+  .task-overdue {
+    font-size: 9px;
+    font-weight: 500;
+    background: #f8e9e6;
+    color: var(--accent);
+    border: 0.5px solid #e1c6bf;
+    padding: 1px 6px;
+    border-radius: 20px;
+    vertical-align: middle;
+    margin-left: 6px;
+    letter-spacing: 0.05em;
+  }
+    .task-due   { font-size: 11px; color: var(--ink-muted); display: block; margin-top: 2px; }
+    .task-notes { font-size: 11px; color: var(--ink-muted); margin-top: 2px; font-style: italic; line-height: 1.4; }
+
+  /* ── Word of the Day tile ── */
+  .word-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 8px; flex-wrap: wrap; }
+    .word-text { font-family: Georgia, serif; font-size: 24px; color: var(--accent-deep); font-weight: normal; }
+    .word-pos  { font-size: 11px; font-style: italic; color: var(--ink-muted); }
+    .word-def  { font-size: 12px; color: var(--ink-soft); line-height: 1.7; margin-bottom: 8px; }
+    .word-ex   { font-size: 11px; color: var(--ink-muted); font-style: italic; line-height: 1.6; }
+
+  /* ── Fact tile ── */
+    .fact-text { font-size: 13px; color: var(--ink-soft); line-height: 1.8; }
+
+    .empty { color: var(--ink-muted); font-style: italic; font-size: 12px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-left">
+      <div class="jarvis-tag"><span class="jarvis-dot"></span>Jarvis &mdash; Online</div>
+      <div class="header-greeting">Good morning, Prish.</div>
+      <div class="header-sub">Here's your briefing. Let's get you ready for the day.</div>
+    </div>
+    <div class="header-date">Friday, May 1, 2026</div>
+  </div>
+
+  <div class="bento">
+
+    <!-- Weather -->
+    <div class="tile span-4">
+      <div class="label">London Weather</div>
+      <div class="temp-big">14°</div>
+        <div class="temp-desc">Overcast clouds</div>
+        <div class="weather-sub">
+            <div class="wsub-item"><span class="wsub-label">Feels like</span><span class="wsub-val">12°C</span></div>
+            <div class="wsub-item"><span class="wsub-label">High / Low</span><span class="wsub-val">16° / 10°</span></div>
+            <div class="wsub-item"><span class="wsub-label">Humidity</span><span class="wsub-val">78%</span></div>
+            <div class="wsub-item"><span class="wsub-label">Wind</span><span class="wsub-val">19 km/h</span></div>
+        </div>
+    </div>
+
+    <!-- Exchange Rates -->
+    <div class="tile span-4">
+      <div class="label">Exchange Rates &rarr; INR</div>
+      
+            <div class="fx-row">
+                <span class="fx-code">GBP</span>
+                <span class="fx-label-sm">British Pound</span>
+                <span class="fx-rate">&#8377;107.42</span>
+            </div>
+            <div class="fx-row">
+                <span class="fx-code">EUR</span>
+                <span class="fx-label-sm">Euro</span>
+                <span class="fx-rate">&#8377;90.18</span>
+            </div>
+            <div class="fx-row">
+                <span class="fx-code">USD</span>
+                <span class="fx-label-sm">US Dollar</span>
+                <span class="fx-rate">&#8377;83.57</span>
+            </div>
+    </div>
+
+    <!-- Gold -->
+    <div class="tile span-4">
+      <div class="label">Gold</div>
+      
+        <div class="fx-row">
+            <span class="fx-code">INR</span>
+            <span class="fx-label-sm">per 10g (24K)</span>
+            <span class="fx-rate">&#8377;88,370</span>
+        </div>
+        <div class="fx-row">
+            <span class="fx-code">USD</span>
+            <span class="fx-label-sm">per troy oz</span>
+            <span class="fx-rate">$3,289</span>
+        </div>
+        <div class="fx-row">
+            <span class="fx-code">GBP</span>
+            <span class="fx-label-sm">per gram</span>
+            <span class="fx-rate">&#163;82.27</span>
+        </div>
+    </div>
+
+    <!-- Calendar -->
+    <div class="tile span-6">
+      <div class="label">3-Day Schedule</div>
+      <div class="cal-day-label">Today <span class="cal-day-date">May 1</span></div>
+                <div class="event-item">
+                    <div class="event-time">9:00 AM – 10:00 AM</div>
+                    <div class="event-info">
+                        <div class="event-title">Team standup </div>
+                        <span class='event-loc'>Google Meet</span>
+                    </div>
+                </div>
+                <div class="event-item">
+                    <div class="event-time">2:00 PM – 3:30 PM</div>
+                    <div class="event-info">
+                        <div class="event-title">Product review <span class='deadline-badge'>Deadline</span></div>
+                        <span class='event-loc'>Conf Room A</span>
+                    </div>
+                </div><div class="cal-day-label">Tomorrow <span class="cal-day-date">May 2</span></div>
+                <div class="event-item">
+                    <div class="event-time">11:00 AM – 11:45 AM</div>
+                    <div class="event-info">
+                        <div class="event-title">Client sync </div>
+                        <span class='event-loc'>Zoom</span>
+                    </div>
+                </div><div class="cal-day-label">Sunday, May 3 <span class="cal-day-date">May 3</span></div><p class='cal-empty'>Nothing scheduled.</p>
+    </div>
+
+    <!-- Tasks -->
+    <div class="tile span-6">
+      <div class="label">My Tasks</div>
+      
+        <div class="task-item">
+            <div class="task-dot"></div>
+            <div class="task-body">
+                <div class="task-title">Review Q2 analytics report </div>
+                <span class='task-due'>Due Sat, May 3</span>
+            </div>
+        </div>
+        <div class="task-item">
+            <div class="task-dot  task-dot-overdue"></div>
+            <div class="task-body">
+                <div class="task-title">Submit expense claims <span class='task-overdue'>Overdue</span></div>
+                <span class='task-due'>Due Mon, Apr 28</span>
+            </div>
+        </div>
+        <div class="task-item">
+            <div class="task-dot"></div>
+            <div class="task-body">
+                <div class="task-title">Read chapter 4 of Thinking Fast and Slow </div>
+                
+            </div>
+        </div>
+    </div>
+
+    <!-- Headlines -->
+    <div class="tile span-12">
+      <div class="label">Headlines</div>
+      
+            <div class="news-item">
+                <span class="news-num">01</span>
+                <a href="#" target="_blank" class="news-title">US and EU prepare fresh trade talks amid tariff pressure</a>
+            </div>
+            <div class="news-item">
+                <span class="news-num">02</span>
+                <a href="#" target="_blank" class="news-title">India announces logistics reform push to cut export costs</a>
+            </div>
+            <div class="news-item">
+                <span class="news-num">03</span>
+                <a href="#" target="_blank" class="news-title">Bank of England signals caution as inflation cools unevenly</a>
+            </div>
+            <div class="news-item">
+                <span class="news-num">04</span>
+                <a href="#" target="_blank" class="news-title">Oil slips as inventories rise, markets watch shipping lanes</a>
+            </div>
+            <div class="news-item">
+                <span class="news-num">05</span>
+                <a href="#" target="_blank" class="news-title">Chipmakers rally on new data-center demand forecast</a>
+            </div>
+    </div>
+
+    <!-- Word of the Day -->
+    <div class="tile span-6">
+      <div class="label">Word of the Day</div>
+      
+        <div class="word-head">
+            <span class="word-text">Liminal</span><span class="word-pos">adjective</span>
+        </div>
+        <p class="word-def">Describing a threshold moment where one state has ended but the next one has not fully formed yet.</p>
+        <p class="word-ex">"The station platform at dawn felt liminal, suspended between yesterday's fatigue and today's momentum."</p>
+    </div>
+
+    <!-- Fact -->
+    <div class="tile span-6">
+      <div class="label">Today's Fact</div>
+      <p class="fact-text">People estimate waiting time as shorter when they can see progress, even if the actual wait is identical. That is why tiny indicators like loading bars reduce frustration more than raw speed alone.</p>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>
